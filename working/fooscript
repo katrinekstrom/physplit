@@ -1,0 +1,7 @@
+#!/bin/bash
+# this is a test shell script that prints out stuff
+
+echo 'hello world'
+
+
+
