@@ -2,18 +2,10 @@
 
 = Introduction =
 
-* 'physplit' = 'python' + 'hysplit' *
+== 'physplit': 'python' + 'hysplit' ==
 
 Yay for hysplit and yay for python. Together they will make a powerful tool for air quality modelling and pollutant dispersion simulation, as well as providing valuable insight into air parcel histories for meteorological research. The physplit project has been created to make use of some python modules developed during a research project (ongoing) by Thomas Chubb to investigate the sources of aerosols during winter storms in South-Eastern Australia and includes a pythonic command-line interface that is more powerful than the GUI distributed with Hysplit and easier to use than directly editing the Fortran namelist files used by the numerical kernel of the hysplit model. Plotting utilities based on the python matplotlib modules are included and analysis tools will be added as they are developed. if you'd like to get on board with the development or would like to try it out for yourself, give me a yell!
 
 == NOAA Hysplit ==
 
- 
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+The HYSPLIT (HYbrid Single-Particle Lagrangian Integrated Trajectory) model is the newest version of a complete system for computing simple air parcel trajectories to complex dispersion and deposition simulations. More info on: [http://www.arl.noaa.gov/ready/hysp_info.html] 
