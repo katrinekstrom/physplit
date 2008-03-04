@@ -1,0 +1,14 @@
+#summary Overview of the code structure.
+
+= Introduction =
+
+So... Maybe this page will help me get the code in order before I upload the inaugural version, which I plan to do before packing up today and going home. Ultimately this page will serve as a root to all general descriptions code.
+
+Broadly speaking, the code can be categorised into five major sections. The following  modules are being developed to handle:
+
+* *physplit.conf*: Specification of problem (model domain, data sources, pollutant characteristics etc.)
+* *physplit.exec*: I/O to the hysplit numerical crunching machine
+* *physplit.arch*: Output data archiving
+* *pyhsplit.plot*: Plotting and presentation of results
+* *physplit.diag*: Diagnostic tools
+
