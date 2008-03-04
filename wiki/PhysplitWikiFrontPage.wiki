@@ -9,3 +9,11 @@ Yay for hysplit and yay for python. Together they will make a powerful tool for 
 == NOAA Hysplit ==
 
 The HYSPLIT (HYbrid Single-Particle Lagrangian Integrated Trajectory) model is the newest version of a complete system for computing simple air parcel trajectories to complex dispersion and deposition simulations. More info on: [http://www.arl.noaa.gov/ready/hysp_info.html] 
+
+== Python ==
+
+Python is the greatest most usefullest programming language that I have used. Combined with the numeric and scientific modules (numpy and scipy), along with good plotting tool kits (matplotlib, pylab) it makes a great scientific tool as well. There are a few more things you'll need in your python miscellany, including tools to handle the formidable NetCDF file format (PyNGL, PyNIO), available from the Earth System Grid pages, but not till I get around to implementing the WRF-ARW stuff. I think I use pyproj as well, but run it and see about your errors first
+
+== pywrf ==
+
+You guessed it, *'pywrf' = 'python' + 'wrf'*. Here is where I plug another ongoing project, being principally maintained by the talented and wonderful Valerio Bisignesi, until he cuts and runs very shortly. Check it out [http://code.google.com/p/pywrf/ here]
