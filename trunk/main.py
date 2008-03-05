@@ -1,10 +1,12 @@
 #!/usr/bin/python
 import pylab as p
 import numpy as n
-import PlotToolbox as PT
-import hysplitIO as H
-import ArrayToolbox as AT
-import ArchiveControl as AC
+import plot.plotcoast as pt
+import conf
+# import PlotToolbox as PT
+# import hysplitIO as H
+# import ArrayToolbox as AT
+# import ArchiveControl as AC
 import os
 
 
@@ -14,7 +16,6 @@ def GenEndpts():
     heights=n.array([])
     heights=n.append(heights,n.arange(1000,5000,500))
     heights=n.append(heights,n.arange(200,1000,200))
-    # heights=n.append(heights,n.arange(1000,5000,500))
     heights=heights*n.ones([1,1])
 
     lats = n.ones(heights.shape)*-36.3869
@@ -23,20 +24,10 @@ def GenEndpts():
     endpts =n.hstack((lats.T,lons.T,heights.T))
     return endpts
 
-def MakeSomeDates(days,hours):
-    """Obsolete"""
 
-    date=[]
+def dummy():
+    return None
 
-    for d in range(0,days.__len__()):
-	for h in range(0,hours.__len__()):
-	    if (hours[h]<10):
-		str=' 0'
-	    else:
-		str=' '
-	    date.append('06 ' + '07 ' + days[d].__str__() + str + hours[h].__str__())
-
-    return date
 
 def doit1(DATE):
 
@@ -163,6 +154,3 @@ def doitconc():
 
     return None
 
-
-
-doit2()
