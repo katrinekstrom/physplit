@@ -1,12 +1,7 @@
 #!/usr/bin/python
 import pylab as p
 import numpy as n
-import plot.plotcoast as pt
-import conf
-# import PlotToolbox as PT
-# import hysplitIO as H
-# import ArrayToolbox as AT
-# import ArchiveControl as AC
+import hconf, harch, hexec, hplot, hdiag
 import os
 
 
