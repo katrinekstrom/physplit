@@ -1,4 +1,4 @@
-  6  7 24 21
+  6  7 31  0
 12
    -36.387   148.394  1000.000
    -36.387   148.394  1500.000
@@ -15,6 +15,10 @@
 ****
 0
    10000.0
-1
-/media/sda4/hysplit-data/
-['gdas1.jul06.w4',
+2
+/media/sda4/hysplit-data/gdas/
+gdas1.jul06.w4
+/media/sda4/hysplit-data/gdas/
+gdas1.jul06.w5
+/home/tchubb/Uni-Files/pylib/physplit/test-data/                                
+TEST_OUTFILE                                                                    

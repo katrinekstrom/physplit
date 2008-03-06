@@ -9,6 +9,22 @@ Copyright (C) Thomas Chubb 2008
 
 import numpy as n
 
+
+
+def GenEndpts():
+    """a set of endpoints, feel free to edit"""
+    
+    heights=n.array([])
+    heights=n.append(heights,n.arange(1000,5000,500))
+    heights=n.append(heights,n.arange(200,1000,200))
+    heights=heights*n.ones([1,1])
+
+    lats = n.ones(heights.shape)*-36.3869
+    lons = n.ones(heights.shape)*148.394
+
+    endpts =n.hstack((lats.T,lons.T,heights.T))
+    return endpts
+
 def WriteTrajInfile(infile,date='06 07 28 00',
 		    	# num_trajs=1,
 			traj_endpts=n.array([-36.3869, 148.394, 1000]),
@@ -43,13 +59,13 @@ def WriteTrajInfile(infile,date='06 07 28 00',
     is currently being developed for use in back trajectory analysis. This
     will most likely be improved upon at a later date.
     """
-    import ArrayToolbox as AT
+    import htools as tools
     # determine total number of trajectories to be requested
     if (len(traj_endpts.shape)==1):
 	num_trajs=1
     else:
 	# Sort list by end height and delete replicate trajectories
-	traj_endpts=AT.unique2d(traj_endpts)
+	traj_endpts=tools.unique2d(traj_endpts)
 	num_trajs=traj_endpts.shape[0]
 
     # dataset_name may be a string (not iterable) or a list or an array

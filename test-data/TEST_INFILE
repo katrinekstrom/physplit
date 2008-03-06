@@ -1,4 +1,4 @@
-06 07 28 18
+06 07 31 00
 12
 -36.3869 148.3940 1000
 -36.3869 148.3940 1500
@@ -16,9 +16,9 @@
 0
 10000
 2
-/media/sda4/hysplit-data/
+/media/sda4/hysplit-data/gdas/
 gdas1.jul06.w4
-/media/sda4/hysplit-data/
+/media/sda4/hysplit-data/gdas/
 gdas1.jul06.w5
-../test-data/
+/home/tchubb/Uni-Files/pylib//back_trajectories/testing/
 TEST_OUTFILE
