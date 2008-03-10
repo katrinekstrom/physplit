@@ -12,6 +12,7 @@ def InvokeMap(coastfile='/media/sda4/map-data/aust-coast-noaa-2000000-1.dat',
 		    lllat=-47,
 		    urlat=-9,
 		    draw_map=True):
+    global PYLIB_PATH
 
     map = Basemap(projection='tmerc',
 			llcrnrlon=lllon,
@@ -29,7 +30,7 @@ def InvokeMap(coastfile='/media/sda4/map-data/aust-coast-noaa-2000000-1.dat',
     # p.clf()
     try: coast = p.load(coastfile)
     except IOError:
-	coastfile = '/media/sda4/map-data/austcoast-small.dat'
+	coastfile = PYLIB_PATH+'/physplit/plot_files/austcoast-small.dat'
 	coast = p.load(coastfile)
 
     map.drawmeridians(p.arange(0,360,10),labels=[0,0,1,0])

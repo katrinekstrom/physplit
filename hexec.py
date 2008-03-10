@@ -5,14 +5,14 @@ Copyright (C) Thomas Chubb 2008
 
 import numpy as n
 
-def exec_hymodelt(infile='../test-data/TEST_INFILE',
+def ExecHymodelt(infile='../test-data/TEST_INFILE',
 		    hysplit_path='/home/tchubb/hysplit4/exec/hymodelt'):
 
     """define a shell command and execute to operate hysplit trajectory model"""
     import os
     import sys
 
-    command = 'cat %s | %s' % (infile,hysplit_path)
+    command = 'cat %s | wine %s' % (infile,hysplit_path)
     print command
     
     # Check infile location and try alternative defaults
