@@ -9,7 +9,8 @@ def SortTrajectories(trajectories,by_var='end_height'):
     USAGE:
     by_var can be 'height' or 'enddate'... so far...
     """
-    import ArchiveControl as AC
+    # import ArchiveControl as AC
+    import physplit.harch as harch
 
     num_trajs=trajectories.__len__()
     the_index=n.zeros([1,num_trajs])
@@ -19,7 +20,7 @@ def SortTrajectories(trajectories,by_var='end_height'):
 	    the_index[0,k] = (trajectories[k]['position'][0,2])
 	elif (by_var == 'end_date'):
 	    et = trajectories[k]['endtime']
-	    the_index[0,k] = AC.Date2Code(et[0],et[1],et[2],et[3]) 
+	    the_index[0,k] = harch.Date2Code(et[0],et[1],et[2],et[3]) 
 
     inx = permutation_indices(the_index)
 
