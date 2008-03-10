@@ -9,6 +9,7 @@ import sys
 sys.path.append(PYLIB_PATH)
 # modules
 import numpy as n
+import pylab as p
 import hconf, harch, hexec, hplot, hdiag, htools
 import mydatetime.mydatetime as cal
 
@@ -17,19 +18,20 @@ HYMODELT_PATH = PYLIB_PATH + 'hysplit4/exec/hymodelt'
 # OUTFILE_ARCHIVE = PYLIB_PATH + 'back_trajectories/testing/'
 OUTFILE_ARCHIVE =  '/media/sda4/back-trajectories-data/testing/'
 
-def doit(arch_prefix='testing/'):
+def doit(arch_prefix='testing/',return_traj=False):
 
     global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
     # OUTFILE_ARCHIVE+=arch_prefix
     
-    date=[2006073100]
+    date_list=[2006073012, 2006073100]
 
     endpts=hconf.GenEndpts()
+    for date in date_list:
+	trajectories=MakeTraj(endpts,[date],return_trajectories=True)
+	PlotTraj(trajectories)
 
-    trajectories=MakeTraj(endpts,date,return_trajectories=True)
-    # PlotTraj(trajectories)
-
-    return trajectories
+    if return_traj:
+	return trajectories
 
 
 def MakeTraj(endpts,date_list,return_trajectories=False):
@@ -87,15 +89,15 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
 
 def PlotTraj(trajectories):
     
-    trajectories=htools.SortTrajectories(trajectories)
+    trajectories=htools.SortTrajectories(trajectories,by_var='end_height')
     map=hplot.InvokeMap(lllon=80,
 	    urlon=166,
 	    lllat=-47,
 	    urlat=-9)
 
     p.figure(1)
-    p.clf()
-    hplot.PlotTrajectories(trajectories,map,[3,12,24])
+    # p.clf()
+    hplot.PlotTrajectories(trajectories,map,[3,12,24],plot_legend=False)
     map.drawmapboundary
     lims = hplot.SetCoordLim(map,80,166,-47,-9)
     p.axis(lims)

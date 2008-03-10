@@ -56,6 +56,9 @@ def GetTrajectories(height=[500.],
 
     return traj_out
 
+def Date2Code(year, month, day, hour):
+    return int('20'+str(year).zfill(2)+str(month).zfill(2)+str(day).zfill(2)+str(hour).zfill(2))
+
 def AppendTrajOutfile():
     """ToDo: Wrapper for SaveTrajOutfile() to avoid unnecessary overwrites """
     return None

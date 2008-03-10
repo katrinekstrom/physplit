@@ -56,7 +56,7 @@ def SetCoordLim(map,lllon=80, urlon=166, lllat=-47, urlat=-9):
 
 
 # def PlotTrajectories(trajectories,map):
-def PlotTrajectories(trajectories,map,time_increments=[3,12]):
+def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
     
     num_trajs=trajectories.__len__()
     num_mrkrs=time_increments.__len__()
@@ -90,10 +90,11 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12]):
 	next_line=p.plot(traj_x,traj_y,color=clrs[k])
 	plot_lines.append(next_line)
 	
-	txt=trajectories[k]['endtime'] 
-	hgt=trajectories[k]['endpoint'][2]
-	next_text=str(txt[2])+'/0'+str(txt[1])+'/0'+str(txt[0])+' '+str(txt[3])+'00' + ' ' + str(int(hgt)) + 'm AGL'
-	lgnd_txt.append(next_text)
+	if plot_legend:
+	    txt=trajectories[k]['endtime'] 
+	    hgt=trajectories[k]['endpoint'][2]
+	    next_text=str(txt[2])+'/0'+str(txt[1])+'/0'+str(txt[0])+' '+str(txt[3]).zfill(4) + ' ' + str(int(hgt)) + 'm AGL'
+	    lgnd_txt.append(next_text)
 
 	for j in range(0,num_mrkrs):
 	    idx = range(offset[j+k*num_mrkrs],num_pts,time_increments[j])
@@ -103,9 +104,10 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12]):
 #	    print clrs[k]
 	    p.setp(hndl,marker=mrkr_sty[j],markerfacecolor=clrs[k])
 
-    lgnd=p.legend(plot_lines,lgnd_txt, loc='upper left')
-    texts = lgnd.get_texts()
-    p.setp(texts, fontsize='small')
+    if plot_legend:
+	lgnd=p.legend(plot_lines,lgnd_txt, loc='upper left')
+	texts = lgnd.get_texts()
+	p.setp(texts, fontsize='small')
 
 
 #    for k in range(0,num_trajs):
