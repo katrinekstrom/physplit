@@ -3,7 +3,7 @@
 import os
 global PYLIB_PATH
 # pylib_path = os.path.join('home','tchubb','Uni-Files','pylib','')
-PYLIB_PATH = '/home/tchubb/Uni-Files/pylib/'
+PYLIB_PATH = '/home/tchubb/pylib/'
 
 import sys
 sys.path.append(PYLIB_PATH)
@@ -14,9 +14,9 @@ import hconf, harch, hexec, hplot, hdiag, htools
 import mydatetime.mydatetime as cal
 
 global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
-HYMODELT_PATH = PYLIB_PATH + 'hysplit4/exec/hymodelt'
-# OUTFILE_ARCHIVE = PYLIB_PATH + 'back_trajectories/testing/'
-OUTFILE_ARCHIVE =  '/media/sda4/back-trajectories-data/testing/'
+HYMODELT_PATH = PYLIB_PATH + '/hysplit4/exec/hymodelt'
+OUTFILE_ARCHIVE =  '/home/tchubb/output-hysplit/testing/'
+METFILE_ARCHIVE = '/home/tchubb/hysplit-data/'
 
 def doit(arch_prefix='testing/',return_traj=False):
 
@@ -27,11 +27,15 @@ def doit(arch_prefix='testing/',return_traj=False):
 
     endpts=hconf.GenEndpts()
     for date in date_list:
-	trajectories=MakeTraj(endpts,[date],return_trajectories=True)
+	trajectories,flag=MakeTraj(endpts,[date],return_trajectories=True)
+	if flag:
+	    return [],1
 	PlotTraj(trajectories)
 
     if return_traj:
-	return trajectories
+	return trajectories,0
+    else:
+	return [],0
 
 
 def MakeTraj(endpts,date_list,return_trajectories=False):
@@ -42,7 +46,16 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
     outfile = 'hysplit-outfile'
     outfile_dir = PYLIB_PATH + 'physplit/working/'
     date_str=cal.FormatDate(date_list)
-	
+    dataset_dir=METFILE_ARCHIVE+'gdas/'
+	    
+    # sanity check
+    for file in [infile.rstrip('/hysplit-infile'),outfile_dir]:
+	try:
+	    os.stat(file)
+	except OSError:
+	    print "physplit Error: ",file, " not found"
+	    return [], 1
+
     k=-1
     for date in date_str: 
 	# This loop contains all of the steps to create and archive trajectory output files. The 
@@ -56,41 +69,42 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
 		    traj_endpts=endpts,
 		    run_time=-96,
 		    date=date,
-		    dataset_dir='/media/sda4/hysplit-data/gdas/',
+		    dataset_dir=dataset_dir,
 		    dataset_name=['gdas1.jul06.w4','gdas1.jul06.w5'],
 		    outfile=outfile,
 		    outfile_dir=outfile_dir)
     
 	if flag:
 	    print 'Error writing infile'
-	    return 1
+	    return [], 1
 	
 	# verify that there is a file at the designated path, fortran complains otherwise
 	cmd = 'touch ' + outfile_dir + outfile
 	os.system(cmd)
     
 	# Call to hysplit:
-	flag = hexec.exec_hymodelt(infile,hysplit_path=HYMODELT_PATH)
+	flag = hexec.ExecHymodelt(infile,hysplit_path=HYMODELT_PATH)
     
 	if flag:
 	    print 'failed to execute hysplit... check input files and paths'
-	    return 1
+	    return [], 1
 
 	# Archive with interactive tool
 	flags = harch.SaveTrajOutfile(outfile_dir+outfile,infile,archive_dir=OUTFILE_ARCHIVE,interactive=True)[0]
 	if any(n.array(flags) == 'A'):
-	    return None
+	    return [],1
 
     if return_trajectories:
 	trajectories=harch.GetTrajectories(height=endpts[:,2],time_frame=date_list,archive_dir=OUTFILE_ARCHIVE)
-	return trajectories
+	return trajectories, 0
     else:
-	return None
+	return [], 0
 
 def PlotTraj(trajectories):
+    global PYLIB_PATH
     
     trajectories=htools.SortTrajectories(trajectories,by_var='end_height')
-    map=hplot.InvokeMap(lllon=80,
+    map=hplot.InvokeMap(coastfile=PYLIB_PATH+'physplit/plot_files/austcoast-small.dat',lllon=80,
 	    urlon=166,
 	    lllat=-47,
 	    urlat=-9)
