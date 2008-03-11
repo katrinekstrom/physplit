@@ -18,19 +18,21 @@ HYMODELT_PATH = PYLIB_PATH + '/hysplit4/exec/hymodelt'
 OUTFILE_ARCHIVE =  '/home/tchubb/output-hysplit/testing/'
 METFILE_ARCHIVE = '/home/tchubb/hysplit-data/'
 
-def doit(arch_prefix='testing/',return_traj=False):
+def doit(return_traj=False,plot_traj=False):
 
     global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
-    # OUTFILE_ARCHIVE+=arch_prefix
     
     date_list=[2006073012, 2006073100]
+    trajectories=[]
 
     endpts=hconf.GenEndpts()
     for date in date_list:
-	trajectories,flag=MakeTraj(endpts,[date],return_trajectories=True)
+	traj,flag=MakeTraj(endpts,[date],return_trajectories=True)
+	trajectories.extend(traj)
 	if flag:
 	    return [],1
-	PlotTraj(trajectories)
+	elif plot_traj:
+	    PlotTraj(trajectories)
 
     if return_traj:
 	return trajectories,0
@@ -100,18 +102,19 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
     else:
 	return [], 0
 
-def PlotTraj(trajectories):
+def PlotTraj(trajectories,plot_legend=True):
     global PYLIB_PATH
     
     trajectories=htools.SortTrajectories(trajectories,by_var='end_height')
-    map=hplot.InvokeMap(coastfile=PYLIB_PATH+'physplit/plot_files/austcoast-small.dat',lllon=80,
+    map=hplot.InvokeMap(coastfile=PYLIB_PATH+'physplit/plot_files/austcoast-small.dat',
+	    lllon=80,
 	    urlon=166,
-	    lllat=-47,
-	    urlat=-9)
+	    lllat=-55,
+	    urlat=0)
 
     p.figure(1)
     # p.clf()
-    hplot.PlotTrajectories(trajectories,map,[3,12,24],plot_legend=False)
+    hplot.PlotTrajectories(trajectories,map,[3,12,24],plot_legend=plot_legend)
     map.drawmapboundary
     lims = hplot.SetCoordLim(map,80,166,-47,-9)
     p.axis(lims)
