@@ -6,6 +6,33 @@ import matplotlib as m
 from matplotlib.toolkits.basemap import Basemap
 ar=n.array
 
+def SetDefaultBasemap(lon=n.array([80,170]), lat=n.array([0,-65]), frame_width=5.):
+    test = lon < 0.
+    if True in test:
+        # matplotlib expects 0-360 while WRF for example uses -180-180
+        delta = n.ones(lon.shape)
+        delta *= 360
+        delta = ma.masked_where(lon > 0., delta)
+        lon += delta.filled(fill_value=0)
+    llcrnrlon=lon.min() - frame_width
+    urcrnrlon=lon.max() + frame_width
+    llcrnrlat=lat.min() - frame_width
+    urcrnrlat=lat.max() + frame_width
+    lon_0 = llcrnrlon + (urcrnrlon - llcrnrlon) / 2.
+    lat_0 = llcrnrlat + (urcrnrlat - llcrnrlat) / 2.
+        
+    map = Basemap(
+      llcrnrlon=llcrnrlon,
+      llcrnrlat=llcrnrlat,
+      urcrnrlon=urcrnrlon,
+      urcrnrlat=urcrnrlat,
+      resolution='l',
+      projection='cyl',
+      lon_0=lon_0,
+      lat_0=lat_0
+      )
+    return map
+
 def InvokeMap(coastfile='/media/sda4/map-data/aust-coast-noaa-2000000-1.dat',
 		    lllon=80,
 		    urlon=166,
@@ -14,7 +41,7 @@ def InvokeMap(coastfile='/media/sda4/map-data/aust-coast-noaa-2000000-1.dat',
 		    draw_map=True):
     global PYLIB_PATH
 
-    map = Basemap(projection='tmerc',
+    map = Basemap(projection='cyl',
 			llcrnrlon=lllon,
 			urcrnrlon=urlon,
 			llcrnrlat=lllat,
@@ -22,23 +49,21 @@ def InvokeMap(coastfile='/media/sda4/map-data/aust-coast-noaa-2000000-1.dat',
 			#lat_ts=-35,
 			lat_0=-35,
 			lon_0=120,
-			resolution='c',
+			resolution='l',
 			area_thresh=1000.)
 
-    # if not draw_map: return map
 
-    # p.clf()
-    try: coast = p.load(coastfile)
-    except IOError:
-	coastfile = PYLIB_PATH+'/physplit/plot_files/austcoast-small.dat'
+    try: 
 	coast = p.load(coastfile)
+	coast = p.load(coastfile)
+	coast_x,coast_y = map(coast[:,0],coast[:,1])
+	p.plot(coast_x,coast_y,color='black')    
+    except IOError:
+	map.drawcoastlines()
 
+    map.drawmapboundary()
     map.drawmeridians(p.arange(0,360,10),labels=[0,0,1,0])
     map.drawparallels(p.arange(-90,0,10),labels=[1,0,0,0])
-
-    coast_x,coast_y = map(coast[:,0],coast[:,1])
-    p.plot(coast_x,coast_y,color='black')    
-    map.drawmapboundary()
 
     return map
 
@@ -94,7 +119,10 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
 	if plot_legend:
 	    txt=trajectories[k]['endtime'] 
 	    hgt=trajectories[k]['endpoint'][2]
-	    next_text=str(txt[2])+'/0'+str(txt[1])+'/0'+str(txt[0])+' '+str(txt[3]).zfill(4) + ' ' + str(int(hgt)) + 'm AGL'
+	    # end height only in legend
+	    next_text=str(str(int(hgt))) + 'm'
+	    # next_text=str(txt[2])+'/0'+str(txt[1])+'/0'+str(txt[0])+\
+		    # ' '+str(txt[3]).zfill(2) + '00 ' + str(int(hgt)) + 'm'
 	    lgnd_txt.append(next_text)
 
 	for j in range(0,num_mrkrs):
@@ -110,6 +138,8 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
 	texts = lgnd.get_texts()
 	p.setp(texts, fontsize='small')
 
+    p.title('Back Trajectories: '+ str(txt[2])+'/0'+str(txt[1])+'/0'+str(txt[0])+' '+str(txt[3]).zfill(2) + '00 UTC')
+
 
 #    for k in range(0,num_trajs):
 #	for j in range(0,num_mrkrs):
@@ -118,11 +148,6 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
 #	    print mrkr_sty[j]
 #	    print clrs[k]
 #	    p.setp(hndl,marker=mrkr_sty[j],markerfacecolor=clrs[k])
-
-
-
-
-
 
 
     return None

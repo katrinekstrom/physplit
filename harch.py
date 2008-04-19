@@ -1,6 +1,7 @@
 """Archive and retrieval tools for hysplit output files"""
 import numpy as n
 
+
 def GetTrajectories(height=[500.], 
 		    time_frame=[6073100,6080100],
 		    archive_dir='../back-trajectories/archive/'):
@@ -82,7 +83,8 @@ def SaveTrajOutfile(TrajOutfile,TrajInfile,
     str_cnts=fid.readline().split()
 
     end_time='20'
-    for k in range(0,str_cnts.__len__()): end_time += str_cnts[k]
+    for k in range(0,str_cnts.__len__()): 
+	end_time += str_cnts[k]
 
     num_trajs=int(fid.readline().split()[0])
     
@@ -101,10 +103,13 @@ def SaveTrajOutfile(TrajOutfile,TrajInfile,
 	return flags,filename
 
     cmd = 'cp -f %s %s' % (TrajOutfile,filename)
-    
-    if interactive:
 
+    if interactive or os.path.isfile(filename):
+    
 	print 'I will do the following:\n', cmd, '\nProceed? [y]es/(n)o/(e)xit'
+	if os.path.isfile(filename):
+	    print 'WARNING: file exists!! Overwrite?'
+
 	answer = raw_input()
 	if (answer == 'y') or (answer == ''):
 	    print cmd
@@ -122,6 +127,68 @@ def SaveTrajOutfile(TrajOutfile,TrajInfile,
 	flags.append('0')
 
     return flags,filename
+
+def ReadConcOutfile(conc_outfile):
+
+    fid=open(conc_outfile)
+
+    data=fid.readlines()
+
+    lon=n.array([0.]*(data.__len__()-1))
+    lat=n.array([0.]*(data.__len__()-1))
+    conc=n.array([0.]*(data.__len__()-1))
+
+    k=-1
+    for row in data:
+	if k<0:
+	    data_fields=row.split()
+	    k+=1
+	else:
+	    row=row.split()
+	    lat[k]=float(row[2])
+	    lon[k]=float(row[3])
+	    conc[k]=float(row[4])
+	    k+=1
+	
+    lon=n.unique(lon)
+    lat=n.unique(lat)
+    conc_array=n.zeros((lon.__len__(),lat.__len__()))
+    
+    k=0
+    conc_idx=0
+    for lon_val in lon:
+	conc_array[k,:]=conc[conc_idx:conc_idx+lat.__len__()]
+	conc_idx+=lat.__len__()
+	k+=1
+
+    return lon,lat,conc_array
+
+#def ReadConcOutfile_old(conc_outfile):
+#    import csv
+#
+#    fid=open(conc_outfile)
+#
+#    data=fid.readlines()
+#
+#    lon=[0.]*data.__len__()
+#    lat=[0.]*data.__len__()
+#    conc=[0.]*data.__len__()
+#
+#    k=-1
+#    for row in data:
+#	if k<0:
+#	    data_fields=row.split()
+#	    k+=1
+#	else:
+#	    row=row.split()
+#	    lat[k]=float(row[2])
+#	    lon[k]=float(row[3])
+#	    conc[k]=float(row[4])
+#	    k+=1
+#    
+#
+#    
+#    return lon,lat,conc
 
 def ReadTrajOutfile(trajfile='default',header_only=False):
     """ Read the data in the hysplit output trajectory file and return as a data structure"""
@@ -188,23 +255,23 @@ def ReadTrajOutfile(trajfile='default',header_only=False):
 
     for k in range(0,num_lines):
 	# print 'k=',k
-	d=data[k].split()
-	traj_num=int(d[0])
+	data_list=data[k].split()
+	traj_num=int(data_list[0])
 	point_num=k/num_trajs
 
-	# newitem=n.array( strl2numl(d[13:],'float')  )
+	# newitem=n.array( strl2numl(data_list[13:],'float')  )
 	# print 'newitem=',newitem
 	# print 'olditem=',trajectories[traj_num-1]['userdata'][point_num]
 
-#	print d[0:2]
-#	print d[2:7]
-	trajectories[traj_num-1]['timestamp'][point_num]= n.array( strl2numl(d[2:7])  )
-#	print [d[8]]
-	trajectories[traj_num-1]['age'][point_num]	= n.array( strl2numl([d[8]],'float')  )
-#	print d[9:12]
-	trajectories[traj_num-1]['position'][point_num] = n.array( strl2numl(d[9:12],'float')  )
-#	print d[12:]
-	trajectories[traj_num-1]['userdata'][point_num] = n.array( strl2numl(d[12:],'float')  )
+#	print data_list[0:2]
+#	print data_list[2:7]
+	try:
+	    trajectories[traj_num-1]['timestamp'][point_num]= n.array( strl2numl(data_list[2:7])  )
+	    trajectories[traj_num-1]['age'][point_num]	= n.array( strl2numl([data_list[8]],'float')  )
+	    trajectories[traj_num-1]['position'][point_num] = n.array( strl2numl(data_list[9:12],'float')  )
+	    trajectories[traj_num-1]['userdata'][point_num] = n.array( strl2numl(data_list[12:],'float')  )
+	except IndexError:
+	    pass
 
     return trajectories
 
