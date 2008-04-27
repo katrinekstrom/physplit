@@ -3,6 +3,56 @@
 
 import numpy as n
 
+def TrajectoryStats(trajectories):
+    from copy import deepcopy
+
+    num_trajs=len(trajectories)
+    num_pts=len(trajectories[0]['age'])
+
+    # preallocate
+    lats=n.zeros([num_pts,num_trajs])
+    lons=n.zeros([num_pts,num_trajs])
+    hts=n.zeros([num_pts,num_trajs])
+
+    idx=0
+    for traj in trajectories:
+	lats[:,idx]=traj['position'][:,0]
+	lons[:,idx]=traj['position'][:,1]
+	hts[:,idx]=traj['position'][:,2]
+	idx+=1
+
+    mean_lat=n.mean(lats,axis=1)
+    mean_lon=n.mean(lons,axis=1)
+    mean_ht=n.mean(hts,axis=1)
+    
+    std_lat=n.std(lats,axis=1)
+    std_lon=n.std(lons,axis=1)
+    std_ht=n.std(hts,axis=1)
+
+    mean_traj={}
+    mean_traj['position']=n.zeros([num_pts,3])
+    
+    mean_traj['position'][:,0]=mean_lat
+    mean_traj['position'][:,1]=mean_lon
+    mean_traj['position'][:,2]=mean_ht
+    mean_traj['endtime']=[0,0,0,0]
+    mean_traj['endpoint']=trajectories[0]['endpoint']
+    mean_traj['age']=trajectories[0]['age']
+
+    outer_traj_1=deepcopy(mean_traj)
+    outer_traj_2=deepcopy(mean_traj)
+
+    outer_traj_1['position'][:,0]+=std_lat
+    outer_traj_1['position'][:,1]-=std_lon
+    outer_traj_1['position'][:,2]+=std_ht
+
+    outer_traj_2['position'][:,0]-=std_lat
+    outer_traj_2['position'][:,1]+=std_lon
+    outer_traj_2['position'][:,2]-=std_ht
+
+
+    return [mean_traj,outer_traj_1,outer_traj_2]
+
 def SortTrajectories(trajectories,by_var='end_height'):
     """sort trajectory data structure as defined by ReadTragfile by one of its variables
 
