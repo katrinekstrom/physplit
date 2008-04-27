@@ -16,8 +16,41 @@ import mydatetime.mydatetime as cal
 global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
 HYMODELT_PATH = PYLIB_PATH + '/hysplit4/exec/hymodelt'
 OUTFILE_ARCHIVE =  '/home/tchubb/hysplit-output/GDAS/type-2/'
-METFILE_ARCHIVE = '/home/tchubb/hysplit-data/'
+# METFILE_ARCHIVE = '/home/tchubb/hysplit-data/gdas/2006/'
+METFILE_ARCHIVE = '/media/disk/hysplit-data/GDAS/2006/'
 
+def dummy():
+
+    print "It bloody works!!"
+    return None
+
+def remove_from_record(traj_dict,idx):
+
+    traj_dict_keys=traj_dict.keys()
+
+    for key in traj_dict_keys:
+	foo=traj_dict[key].pop(idx)
+
+def add_to_record(traj_set,traj_dict):
+
+    traj_dict_keys=traj_dict.keys()
+
+    if len(traj_dict_keys)!=len(traj_set):
+	print "Error: dimension mismatch"
+	return 1
+
+    traj_set=htools.SortTrajectories(traj_set,'end_date')
+
+    for key in traj_dict_keys:
+	if 'prefront_12h'in key:
+	    traj_dict[key].append(traj_set[0])
+	if 'prefront_06h'in key:
+	    traj_dict[key].append(traj_set[1])
+	if 'pstfront_06h'in key:
+	    traj_dict[key].append(traj_set[2])
+	if 'pstfront_12h'in key:
+	    traj_dict[key].append(traj_set[3])
+	
 def doit(date_list,return_traj=False,plot_traj=False):
 
     global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE, PYLIB_PATH
@@ -84,7 +117,7 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
     outfile = 'hysplit-outfile'
     outfile_dir = PYLIB_PATH + 'physplit/working/'
     date_str=cal.FormatDate(date_list)
-    dataset_dir=METFILE_ARCHIVE+'gdas/'
+    dataset_dir=METFILE_ARCHIVE
 
     dataset_files=hconf.select_GDAS_files(date_list,os.listdir(dataset_dir))
 	    
@@ -140,26 +173,18 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
     else:
 	return [], 0
 
-def PlotTraj(trajectories,plot_legend=True,plot_ground_tracks=True,plot_profiles=False):
+def PlotTraj(trajectories,plot_legend=True,plot_tracks=True,plot_profiles=False,return_map=False):
+
     global PYLIB_PATH
     
     # trajectories=htools.SortTrajectories(trajectories,by_var='end_height')
     trajectories=htools.SortTrajectories(trajectories,by_var='end_date')
 
     map=hplot.SetDefaultBasemap(n.array([130,155]),n.array([-30,-45]) )
-    # map=hplot.SetDefaultBasemap(n.array([130,156]),n.array([-30,-50]) )
-    # map=hplot.SetDefaultBasemap(n.array([80,156]),n.array([-10,-70]) )
 
-#    map=hplot.InvokeMap(coastfile=PYLIB_PATH+'physplit/plot_files/austcoast-small.dat',
-#	    lllon=80,
-#	    urlon=166,
-#	    lllat=-55,
-#	    urlat=0)
-
-
-    if plot_ground_tracks:
+    if plot_tracks:
         p.figure(1)
-        p.clf()
+	p.clf()
         p.hold('on')
         hplot.PlotTrajectories(trajectories,map,[3,24],plot_legend=plot_legend)
         hplot.SetTitle(trajectories)
@@ -171,7 +196,8 @@ def PlotTraj(trajectories,plot_legend=True,plot_ground_tracks=True,plot_profiles
         # lims = hplot.SetCoordLim(map,80,166,-65,0)
         # p.axis(lims)
         # p.savefig(tmpfigs/)
-	p.draw()
+	p.savefig('./tmpfig1')
+	# p.draw()
 
     if plot_profiles:
         p.figure(2)
@@ -182,9 +208,13 @@ def PlotTraj(trajectories,plot_legend=True,plot_ground_tracks=True,plot_profiles
         p.savefig(PYLIB_PATH+'/testing-2.png')
 	p.xlabel('Parcel Age (hrs)')
 	p.ylabel('Height (m AGL)')
-    	p.draw()
+	p.savefig('./tmpfig2')
+    	# p.draw()
 
-    return None
+    if return_map:
+	return map
+    else:
+	return None
 
 def PlotConc(conc_outfile):
 

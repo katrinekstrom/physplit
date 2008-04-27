@@ -95,6 +95,13 @@ def SetTitle(trajectories):
 	txt=trajectories[0]['endtime']
 	p.title('Back Trajectories: ' + str(txt[2])+'/0'+str(txt[1])+'/0'+str(txt[0])+' '+str(txt[3]).zfill(2) + '00 UTC')
 
+def PrintTrajEndtime(traj_endtime):
+
+    text = str(traj_endtime[3]).zfill(2) + '00' + ' ' + str(traj_endtime[2]).zfill(2)+\
+	    '/'+str(traj_endtime[1]).zfill(2)+'/'+str(traj_endtime[0]).zfill(2)
+
+    return text
+
 
 def SetLegendText(trajectories):
 
@@ -122,8 +129,9 @@ def SetLegendText(trajectories):
 	    next_text=str(str(int(hgt))) + 'm'
 	elif same_endpoint:
 	    # end time and date only in legend
-	    next_text = str(txt[3]).zfill(2) + '00' + ' ' +\
-		str(txt[2]).zfill(2)+'/'+str(txt[1]).zfill(2)
+	    # next_text = str(txt[3]).zfill(2) + '00' + ' ' +\
+	    # 	str(txt[2]).zfill(2)+'/'+str(txt[1]).zfill(2)
+	    next_text=PrintTrajEndtime(traj['endtime'])
 	    # end time only in legend
 	    # next_text = str(txt[3]).zfill(2) + '00' 
 	else:
@@ -156,7 +164,7 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
     offset=[]
     for k in range(0,num_trajs) :
 	for j in range(0,num_mrkrs):
-	    offset.append( (-trajectories[k]['endtime'][3])%(time_increments[j]))
+	    offset.append( (trajectories[k]['endtime'][3])%(time_increments[j]))
 
     mrkr_sty=['.','^','o','s']
     plot_lines=[]
@@ -207,7 +215,7 @@ def VerticalProfiles(trajectories,time_increments=[3,12],plot_legend=True):
 
     for k in range(num_trajs) :
 	for increment in time_increments:
-	    offset.append( (-trajectories[k]['endtime'][3])%(increment))
+	    offset.append( (trajectories[k]['endtime'][3])%(increment))
 
     mrkr_sty=['.','^','o','s']
     lgnd_txt=[]
