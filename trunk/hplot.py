@@ -145,10 +145,10 @@ def SetLegendText(trajectories):
 
 def PlotPollutionSources():
     
-    sources = n.array([[-38.2730, 146.3920],
-		[-37.8140, 144.9630],
-		[-33.1860, 138.0170],
-		[-34.9290, 138.6010]])
+    sources = n.array([[-38.2730, 146.3920], # Hazelwood
+		[-37.8140, 144.9630], # Melbourne
+		[-33.1860, 138.0170], # Port Pirie 
+		[-34.9290, 138.6010]]) # Adelaide
 
     p.plot(sources[:,1],sources[:,0],'ro')
 
