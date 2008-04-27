@@ -3,7 +3,13 @@
 import os
 global PYLIB_PATH
 # pylib_path = os.path.join('home','tchubb','Uni-Files','pylib','')
-PYLIB_PATH = '/home/tchubb/pylib/'
+
+machine_name=os.uname()[1]
+
+if machine_name=='Iguana':
+    PYLIB_PATH = '/home/thom/pylib/'
+elif machine_name=='Linux450':
+    PYLIB_PATH = '/home/tchubb/pylib/'
 
 import sys
 sys.path.append(PYLIB_PATH)
@@ -14,8 +20,8 @@ import hconf, harch, hexec, hplot, hdiag, htools
 import mydatetime.mydatetime as cal
 
 global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
-HYMODELT_PATH = PYLIB_PATH + '/hysplit4/exec/hymodelt'
-OUTFILE_ARCHIVE =  '/home/tchubb/hysplit-output/GDAS/type-2/'
+HYMODELT_PATH = PYLIB_PATH + 'hysplit4/exec/hymodelt'
+OUTFILE_ARCHIVE =  PYLIB_PATH +'hysplit-output/gdas/type-2/'
 # METFILE_ARCHIVE = '/home/tchubb/hysplit-data/gdas/2006/'
 METFILE_ARCHIVE = '/media/disk/hysplit-data/GDAS/2006/'
 
