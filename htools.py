@@ -23,8 +23,8 @@ def Traj_Cyl_Coords(traj, inv=True):
     end_lons=n.array([traj['endpoint'][1]]*num_pts)
 
     if inv:
-	print len(end_lons),len(end_lats),len(traj_coord1),len(traj_coord0)
-        new_coords=geo.inv(end_lons,end_lats,traj_coord1,traj_coord0)
+	# print len(end_lons),len(end_lats),len(traj_coord1),len(traj_coord0)
+        new_coords=geo.inv(end_lons.tolist(),end_lats.tolist(),traj_coord1.tolist(),traj_coord0.tolist())
 	traj_new_coords['position'][:,0]=new_coords[2]
 	traj_new_coords['position'][:,1]=new_coords[0]
     else:
@@ -34,11 +34,10 @@ def Traj_Cyl_Coords(traj, inv=True):
 
     return traj_new_coords
 
-def MeanTrajectory(trajectories):
+def MeanTrajectory(trajectories,num_pts=48):
     from copy import deepcopy
 
     num_trajs=len(trajectories)
-    num_pts=48
     # num_pts=len(trajectories[0]['age'])
 
     # preallocate
@@ -69,21 +68,21 @@ def MeanTrajectory(trajectories):
 
     return mean_traj
 
-def TrajectoryEnvelope(trajectories):
+def TrajectoryEnvelope(trajectories,num_pts=48):
     from copy import deepcopy
 
-    num_trajs=len(trajectories); num_pts=48
+    num_trajs=len(trajectories) 
     
     rng=n.zeros([num_pts,num_trajs])
     azi=n.zeros([num_pts,num_trajs])
     hgt=n.zeros([num_pts,num_trajs])
 
-    mean_traj=MeanTrajectory(trajectories)
+    mean_traj=MeanTrajectory(trajectories,num_pts)
     mean_traj=Traj_Cyl_Coords(mean_traj)
 
     idx=0
     for traj in trajectories:
-	print idx
+	# print idx
 	traj_cyl=Traj_Cyl_Coords(traj)
 	rng[:,idx]=traj_cyl['position'][:num_pts,0]
 	azi[:,idx]=traj_cyl['position'][:num_pts,1]
@@ -121,61 +120,55 @@ def TrajectoryEnvelope(trajectories):
     outer_traj_1=Traj_Cyl_Coords(outer_traj_1,inv=False)
     outer_traj_2=Traj_Cyl_Coords(outer_traj_2,inv=False)
 
-    return [mean_traj,outer_traj_1,outer_traj_2]
+    return [mean_traj],[outer_traj_1,outer_traj_2]
 
-
-
-
-
-
-
-def TrajectoryStats(trajectories):
-    from copy import deepcopy
-
-    num_trajs=len(trajectories)
-    num_pts=48
-    # num_pts=len(trajectories[0]['age'])
-
-    # preallocate
-    lats=n.zeros([num_pts,num_trajs])
-    lons=n.zeros([num_pts,num_trajs])
-    hts=n.zeros([num_pts,num_trajs])
-
-    idx=0
-    for traj in trajectories:
-	lats[:,idx]=traj['position'][:num_pts,0]
-	lons[:,idx]=traj['position'][:num_pts,1]
-	hts[:,idx]=traj['position'][:num_pts,2]
-	idx+=1
-
-    mean_lat=n.mean(lats,axis=1)
-    mean_lon=n.mean(lons,axis=1)
-    mean_ht=n.mean(hts,axis=1)
-    
-    std_lat=n.std(lats,axis=1)
-    std_lon=n.std(lons,axis=1)
-    std_ht=n.std(hts,axis=1)
-
-    mean_traj={}
-    mean_traj['position']=n.zeros([num_pts,3])
-    
-    mean_traj['position'][:,0]=mean_lat
-    mean_traj['position'][:,1]=mean_lon
-    mean_traj['position'][:,2]=mean_ht
-    mean_traj['endtime']=[0,0,0,0]
-    mean_traj['endpoint']=trajectories[0]['endpoint']
-    mean_traj['age']=trajectories[0]['age'][:num_pts]
-
-    outer_traj_1=deepcopy(mean_traj)
-    outer_traj_2=deepcopy(mean_traj)
-
-    outer_traj_1['position'][:,0]+=std_lat
-    outer_traj_1['position'][:,1]-=std_lon
-    outer_traj_1['position'][:,2]+=std_ht
-
-    outer_traj_2['position'][:,0]-=std_lat
-    outer_traj_2['position'][:,1]+=std_lon
-    outer_traj_2['position'][:,2]-=std_ht
+#def TrajectoryStats(trajectories):
+#    from copy import deepcopy
+#
+#    num_trajs=len(trajectories)
+#    num_pts=48
+#    # num_pts=len(trajectories[0]['age'])
+#
+#    # preallocate
+#    lats=n.zeros([num_pts,num_trajs])
+#    lons=n.zeros([num_pts,num_trajs])
+#    hts=n.zeros([num_pts,num_trajs])
+#
+#    idx=0
+#    for traj in trajectories:
+#	lats[:,idx]=traj['position'][:num_pts,0]
+#	lons[:,idx]=traj['position'][:num_pts,1]
+#	hts[:,idx]=traj['position'][:num_pts,2]
+#	idx+=1
+#
+#    mean_lat=n.mean(lats,axis=1)
+#    mean_lon=n.mean(lons,axis=1)
+#    mean_ht=n.mean(hts,axis=1)
+#    
+#    std_lat=n.std(lats,axis=1)
+#    std_lon=n.std(lons,axis=1)
+#    std_ht=n.std(hts,axis=1)
+#
+#    mean_traj={}
+#    mean_traj['position']=n.zeros([num_pts,3])
+#    
+#    mean_traj['position'][:,0]=mean_lat
+#    mean_traj['position'][:,1]=mean_lon
+#    mean_traj['position'][:,2]=mean_ht
+#    mean_traj['endtime']=[0,0,0,0]
+#    mean_traj['endpoint']=trajectories[0]['endpoint']
+#    mean_traj['age']=trajectories[0]['age'][:num_pts]
+#
+#    outer_traj_1=deepcopy(mean_traj)
+#    outer_traj_2=deepcopy(mean_traj)
+#
+#    outer_traj_1['position'][:,0]+=std_lat
+#    outer_traj_1['position'][:,1]-=std_lon
+#    outer_traj_1['position'][:,2]+=std_ht
+#
+#    outer_traj_2['position'][:,0]-=std_lat
+#    outer_traj_2['position'][:,1]+=std_lon
+#    outer_traj_2['position'][:,2]-=std_ht
 
 
     return [mean_traj,outer_traj_1,outer_traj_2]
