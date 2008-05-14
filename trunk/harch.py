@@ -82,6 +82,7 @@ def SaveTrajOutfile(TrajOutfile,TrajInfile,
     fid=open(TrajInfile)
     str_cnts=fid.readline().split()
 
+
     end_time='20'
     for k in range(0,str_cnts.__len__()): 
 	end_time += str_cnts[k]
@@ -103,6 +104,19 @@ def SaveTrajOutfile(TrajOutfile,TrajInfile,
 	return flags,filename
 
     cmd = 'cp -f %s %s' % (TrajOutfile,filename)
+    
+    
+    # Check outfile directory
+    if not os.path.isdir(archive_dir):
+	print 'Create directory '+archive_dir+'?', '\nProceed? [y]es/(n)o'
+
+	answer=raw_input()
+
+	if (answer == 'y') or (answer == ''):
+	    print cmd
+	    os.mkdir(archive_dir)
+	else: 
+	   raise OSError('No such file or directory:',archive_dir) 
 
     if interactive or os.path.isfile(filename):
     

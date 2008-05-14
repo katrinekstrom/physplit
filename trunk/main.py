@@ -8,7 +8,7 @@ machine_name=os.uname()[1]
 
 if machine_name=='Iguana':
     PYLIB_PATH = '/home/thom/pylib/'
-elif machine_name=='Linux450':
+elif machine_name=='linux450':
     PYLIB_PATH = '/home/tchubb/pylib/'
 
 import sys
@@ -21,7 +21,7 @@ import mydatetime.mydatetime as cal
 
 global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
 HYMODELT_PATH = PYLIB_PATH + 'hysplit4/exec/hymodelt'
-OUTFILE_ARCHIVE =  PYLIB_PATH +'hysplit-output/gdas/type-2/'
+OUTFILE_ARCHIVE =  PYLIB_PATH +'hysplit-output/GDAS/type-1/'
 # METFILE_ARCHIVE = '/home/tchubb/hysplit-data/gdas/2006/'
 METFILE_ARCHIVE = '/media/disk/hysplit-data/GDAS/2006/'
 
@@ -48,6 +48,10 @@ def add_to_record(traj_set,traj_dict):
     traj_set=htools.SortTrajectories(traj_set,'end_date')
 
     for key in traj_dict_keys:
+	if 'pstfront_18h'in key:
+	    traj_dict[key].append(traj_set[0])
+	if 'prefront_18h'in key:
+	    traj_dict[key].append(traj_set[0])
 	if 'prefront_12h'in key:
 	    traj_dict[key].append(traj_set[0])
 	if 'prefront_06h'in key:
@@ -179,7 +183,9 @@ def MakeTraj(endpts,date_list,return_trajectories=False):
     else:
 	return [], 0
 
-def PlotTraj(trajectories,plot_legend=True,plot_tracks=True,plot_profiles=False,return_map=False):
+def PlotTraj(trajectories,plot_legend=True,\
+	plot_tracks=True,plot_profiles=False,\
+	return_map=False):
 
     global PYLIB_PATH
     

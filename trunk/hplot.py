@@ -27,7 +27,7 @@ def SetDefaultBasemap(lon=n.array([80,170]), lat=n.array([0,-65]), frame_width=5
       llcrnrlat=llcrnrlat,
       urcrnrlon=urcrnrlon,
       urcrnrlat=urcrnrlat,
-      resolution='l',
+      resolution='i',
       projection='cyl',
       lon_0=lon_0,
       lat_0=lat_0
@@ -154,12 +154,15 @@ def PlotPollutionSources():
 
 
 
-def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
+def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True,alpha=1,clrs=None):
     
     num_trajs=trajectories.__len__()
     num_mrkrs=time_increments.__len__()
     num_pts   = trajectories[0]['age'].__len__() 
-    clrs=ColorSpectrum(num_trajs)
+    if clrs is None:
+	clrs=ColorSpectrum(num_trajs)
+    else:
+	clrs=[clrs]*num_trajs
     
     offset=[]
     for k in range(0,num_trajs) :
@@ -172,14 +175,14 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
 
     for k in range(0,num_trajs):
 	traj_x,traj_y=map(trajectories[k]['position'][:,1], trajectories[k]['position'][:,0] )
-	next_line=p.plot(traj_x,traj_y,color=clrs[k])
+	next_line=p.plot(traj_x,traj_y,color=clrs[k],alpha=alpha)
 	plot_lines.append(next_line)
 	
 	for j in range(num_mrkrs):
 	    try:
     	        idx = range(offset[j+k*num_mrkrs],num_pts,time_increments[j])
     	        hndl = p.plot(traj_x[idx],traj_y[idx],'.')
-    	        p.setp(hndl,marker=mrkr_sty[j],markerfacecolor=clrs[k])
+    	        p.setp(hndl,marker=mrkr_sty[j],markerfacecolor=clrs[k],alpha=alpha)
 	    except IndexError:
 		pass
 
@@ -205,12 +208,15 @@ def PlotTrajectories(trajectories,map,time_increments=[3,12],plot_legend=True):
 
     return None
 
-def VerticalProfiles(trajectories,time_increments=[3,12],plot_legend=True):
+def VerticalProfiles(trajectories,time_increments=[3,12],plot_legend=True,clrs=None,alpha=1):
 
     num_trajs=trajectories.__len__()
     num_mrkrs=time_increments.__len__()
     num_pts   = trajectories[0]['age'].__len__() 
-    clrs=ColorSpectrum(num_trajs)
+    if clrs is None:
+	clrs=ColorSpectrum(num_trajs)
+    else:
+	clrs=[clrs]*num_trajs
     offset=[]
 
     for k in range(num_trajs) :
@@ -224,14 +230,14 @@ def VerticalProfiles(trajectories,time_increments=[3,12],plot_legend=True):
     for k in range(0,num_trajs):
 	age = trajectories[k]['age']
 	height = trajectories[k]['position'][:,2] 
-	next_line=p.plot(age,height,color=clrs[k])
+	next_line=p.plot(age,height,color=clrs[k],alpha=alpha)
 	plot_lines.append(next_line)
 	
 	for j in range(num_mrkrs):
 	    try:
     	        idx = range(offset[j+k*num_mrkrs],num_pts,time_increments[j])
     	        hndl = p.plot(age[idx],height[idx],'.')
-    	        p.setp(hndl,marker=mrkr_sty[j],markerfacecolor=clrs[k])
+    	        p.setp(hndl,marker=mrkr_sty[j],markerfacecolor=clrs[k],alpha=alpha)
 	    except IndexError:
 		pass
 
