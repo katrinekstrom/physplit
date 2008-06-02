@@ -21,14 +21,83 @@ import mydatetime.mydatetime as cal
 
 global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE
 HYMODELT_PATH = PYLIB_PATH + 'hysplit4/exec/hymodelt'
-OUTFILE_ARCHIVE =  PYLIB_PATH +'hysplit-output/GDAS/type-1/'
+OUTFILE_ARCHIVE =  PYLIB_PATH +'hysplit-output/GDAS/all-trajs/'
+# OUTFILE_ARCHIVE =  './sbox'
 # METFILE_ARCHIVE = '/home/tchubb/hysplit-data/gdas/2006/'
-METFILE_ARCHIVE = '/media/disk/hysplit-data/GDAS/2006/'
+METFILE_ARCHIVE = '/media/disk/hysplit-data/GDAS/2005/'
 
 def dummy():
 
     print "It bloody works!!"
     return None
+
+def retrieve_trajectory_archive(date_list, heights=[500,1000,2000], arrival_offset=[-18,-12,-6,0,6,12,18]):
+    import datetime
+    from copy import deepcopy
+    global OUTFILE_ARCHIVE
+
+    # initialise dataset structures
+
+    traj_archive_keys=[]
+    for height in heights:
+	traj_archive_keys.append('traj'+str(height))
+
+    traj_arrival_keys=[]
+    for offset in arrival_offset:
+	if offset<0:
+	    traj_arrival_keys.append( 'prefront_'+str(abs(offset)).zfill(2)+'h' )
+	elif offset==0:
+	    traj_arrival_keys.append( 'frontal_'+str(abs(offset)).zfill(2)+'h' )
+	else:
+	    traj_arrival_keys.append( 'pstfront_'+str(abs(offset)).zfill(2)+'h' )
+
+    traj_archive={}
+    for archive_key in traj_archive_keys:
+	traj_archive[archive_key]={}
+	for arrival_key in traj_arrival_keys:
+	    traj_archive[archive_key][arrival_key]=[]
+
+    for date in date_list:
+	yy,mm,dd,hh=cal.decompose_date(date)
+	event_datetime=datetime.datetime(yy,mm,dd,hh)
+
+	retrieval_list=[]
+	for offset in arrival_offset:
+	    # express arrival offset in seconds
+	    new_datetime=event_datetime+datetime.timedelta(0,offset*3600)
+	    
+	    # form date list element
+	    new_date_list_element=''
+	    for date_time_element in [new_datetime.year, new_datetime.month, new_datetime.day,\
+		    new_datetime.hour]:
+		new_date_list_element+=str(date_time_element).zfill(2)
+	    
+	    retrieval_list.append(int(new_date_list_element))
+
+	for height in heights:
+	    archive_key='traj'+str(height)
+	    traj_set=harch.GetTrajectories(height=height,time_frame=retrieval_list,\
+		    archive_dir=OUTFILE_ARCHIVE)
+	    traj_set=htools.SortTrajectories(traj_set,'end_date')
+	    add_to_record(traj_set,traj_archive[archive_key])
+
+#	traj_set=harch.GetTrajectories(height=500,time_frame=retrieval_list,\
+#		    archive_dir=OUTFILE_ARCHIVE)
+#	traj_set=htools.SortTrajectories(traj_set,'end_date')
+#	add_to_record(traj_set,traj500)
+#
+#	traj_set=harch.GetTrajectories(height=1000,time_frame=retrieval_list,\
+#		    archive_dir=OUTFILE_ARCHIVE)
+#	traj_set=htools.SortTrajectories(traj_set,'end_date')
+#	add_to_record(traj_set,traj1000)
+#
+#	traj_set=harch.GetTrajectories(height=2000,time_frame=retrieval_list,\
+#		    archive_dir=OUTFILE_ARCHIVE)
+#	traj_set=htools.SortTrajectories(traj_set,'end_date')
+#	add_to_record(traj_set,traj2000)
+
+#    return traj500, traj1000, traj2000
+    return traj_archive
 
 def remove_from_record(traj_dict,idx):
 
@@ -47,20 +116,23 @@ def add_to_record(traj_set,traj_dict):
 
     traj_set=htools.SortTrajectories(traj_set,'end_date')
 
+    # this is quite fragile and has been a problem for me:
     for key in traj_dict_keys:
-	if 'pstfront_18h'in key:
-	    traj_dict[key].append(traj_set[0])
 	if 'prefront_18h'in key:
 	    traj_dict[key].append(traj_set[0])
 	if 'prefront_12h'in key:
-	    traj_dict[key].append(traj_set[0])
-	if 'prefront_06h'in key:
 	    traj_dict[key].append(traj_set[1])
-	if 'pstfront_06h'in key:
+	if 'prefront_06h'in key:
 	    traj_dict[key].append(traj_set[2])
-	if 'pstfront_12h'in key:
+	if 'frontal_00h'in key:
 	    traj_dict[key].append(traj_set[3])
-	
+	if 'pstfront_06h'in key:
+	    traj_dict[key].append(traj_set[4])
+	if 'pstfront_12h'in key:
+	    traj_dict[key].append(traj_set[5])
+	if 'pstfront_18h'in key:
+	    traj_dict[key].append(traj_set[6])
+
 def doit(date_list,return_traj=False,plot_traj=False):
 
     global HYMODELT_PATH, OUTFILE_ARCHIVE, METFILE_ARCHIVE, PYLIB_PATH
