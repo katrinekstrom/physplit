@@ -1,0 +1,1 @@
+The NOAA hysplit model is a dispersion and trajectory integration model. Physplit, this Python front-end, is an alternative to the out-of-the box GUI that ships with hysplit. It is not graphical but is intended to allow for communication with the hysplit back-end from the python shell.
